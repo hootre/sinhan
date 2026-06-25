@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>신한 SOL</title>
+<style>
+  :root{
+    --bg:#0a0e17;--bg2:#0e1320;--card:#141a28;--card2:#181f2e;--line:#222b3d;
+    --txt:#ffffff;--sub:#8b93a3;--sub2:#5c6577;--blue:#3d6fff;--blue-soft:#19233d;--shinhan:#1a6dff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;background:#000;display:flex;justify-content:center;color:var(--txt);}
+  .phone{position:relative;width:100%;max-width:430px;min-height:100vh;background:var(--bg);overflow:hidden;}
+  .page{display:none;flex-direction:column;min-height:100vh;animation:fade .25s ease;}
+  .page.active{display:flex;}
+  @keyframes fade{from{opacity:.3}to{opacity:1}}
+
+  .topbar{display:flex;align-items:center;padding:16px 18px 8px;gap:14px;}
+  .topbar .spacer{flex:1;}
+  .icn{width:26px;height:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#cfd4de;}
+  .icn svg{width:24px;height:24px;}
+  .back{cursor:pointer;color:#e6e9ef;}
+  .back svg{width:26px;height:26px;}
+  .topbar .ttl{font-size:15px;font-weight:600;color:#9aa3f0;cursor:pointer;}
+  .dot{position:absolute;top:-2px;right:-1px;width:7px;height:7px;border-radius:50%;background:#ff4757;border:1.5px solid var(--bg);}
+  .rel{position:relative;}
+
+  .slogo{width:36px;height:36px;border-radius:50%;background:var(--shinhan);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .slogo svg{width:26px;height:26px;}
+  .slogo.sm{width:34px;height:34px;}.slogo.sm svg{width:24px;height:24px;}
+
+  .acc-head{display:flex;align-items:flex-start;gap:12px;padding:10px 22px 14px;}
+  .acc-head .name{font-size:18px;font-weight:700;letter-spacing:-.5px;}
+  .acc-head .num{font-size:13px;color:var(--sub);margin-top:5px;display:flex;align-items:center;gap:6px;cursor:pointer;}
+  .copy{width:14px;height:14px;opacity:.7;}
+
+  .divider{height:1px;background:var(--line);margin:0 22px;}
+  .info{padding:8px 22px 6px;}
+  .row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;font-size:15px;}
+  .row.tap{cursor:pointer;}
+  .row .k{color:var(--sub);}
+  .row .v{font-weight:700;display:flex;align-items:center;gap:4px;}
+  .chev{color:var(--sub2);font-size:16px;}
+
+  .exp-wrap{padding:14px 22px;}
+  .exp{border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+  .exp .item{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;font-size:15px;font-weight:700;cursor:pointer;}
+  .exp .item+.item{border-top:1px solid var(--line);}
+  .exp .caret{color:var(--sub);font-size:15px;transition:transform .2s;}
+  .exp .body{max-height:0;overflow:hidden;transition:max-height .25s ease;background:var(--bg2);}
+  .exp .body p{padding:0 22px;font-size:15px;color:var(--sub);line-height:1.7;}
+  .exp .body.open{max-height:160px;padding:18px 0;}
+
+  .mgmt-foot{margin-top:auto;padding:22px 22px 28px;background:var(--bg2);}
+  .mgmt-foot .lbl{font-size:13px;color:var(--sub);margin-bottom:14px;}
+  .mgmt-foot .row{padding:6px 0;font-size:15px;font-weight:700;cursor:pointer;}
+
+  .bal-wrap{padding:6px 22px 0;}
+  .bal{font-size:28px;font-weight:800;letter-spacing:-1px;}
+  .bal-sub{font-size:13px;color:var(--sub);margin-top:6px;}
+  .deposit-btn{margin:18px 0 14px;width:100%;padding:16px;border:none;border-radius:13px;background:var(--blue-soft);color:#7fa0ff;font-size:16px;font-weight:700;cursor:pointer;}
+  .rate-card{display:flex;align-items:center;gap:12px;border-top:1px solid var(--line);padding:16px 2px;cursor:pointer;}
+  .rate-ic{width:36px;height:36px;border-radius:10px;background:#1c2740;display:flex;align-items:center;justify-content:center;font-size:17px;}
+  .rate-card .rt{font-size:15px;font-weight:700;}
+  .rate-card .rs{font-size:12px;color:var(--sub);margin-top:3px;}
+  .rate-card .ar{margin-left:auto;color:var(--sub2);font-size:18px;}
+
+  .filter{display:flex;justify-content:flex-end;align-items:center;gap:6px;padding:20px 22px 4px;background:var(--bg2);margin-top:10px;color:#cfd4de;font-size:15px;font-weight:600;cursor:pointer;}
+  .txns{background:var(--bg2);padding:6px 22px 30px;flex:1;}
+  .txn-date{font-size:13px;color:var(--sub);margin:22px 0 12px;}
+  .txn{display:flex;justify-content:space-between;align-items:flex-start;}
+  .txn .lbl{font-size:17px;font-weight:700;}
+  .txn .tm{font-size:13px;color:var(--sub);margin-top:6px;}
+  .txn .amt{font-size:17px;font-weight:700;color:var(--blue);text-align:right;}
+  .txn .run{font-size:13px;color:var(--sub);margin-top:6px;text-align:right;}
+  .txn-id{font-size:13px;color:var(--sub2);margin-top:12px;}
+  .txn-line{height:1px;background:var(--line);margin-top:18px;}
+
+  .main-top{display:flex;align-items:center;gap:8px;padding:14px 18px 6px;}
+  .m-logo{width:24px;height:24px;border-radius:7px;background:#f6c343;color:#1a1300;font-weight:900;font-size:15px;display:flex;align-items:center;justify-content:center;}
+  .m-name{font-size:16px;font-weight:700;margin-left:2px;}
+  .promo{position:relative;padding:18px 20px 16px;overflow:hidden;cursor:pointer;}
+  .promo .close{position:absolute;top:14px;right:18px;font-size:12px;color:var(--sub);display:flex;gap:6px;align-items:center;cursor:pointer;}
+  .promo h2{font-size:18px;font-weight:800;line-height:1.34;letter-spacing:-.5px;max-width:62%;}
+  .promo .lk{margin-top:12px;font-size:13px;color:#cdd2db;font-weight:600;}
+  .bear{position:absolute;right:6px;bottom:2px;width:104px;height:104px;}
+  .panel{margin:6px 14px 0;background:var(--card);border-radius:16px;padding:18px 16px;}
+  .panel .hd{display:flex;justify-content:space-between;align-items:center;font-size:16px;font-weight:800;margin-bottom:6px;cursor:pointer;}
+  .panel .hd .ar{color:var(--sub2);font-size:16px;}
+  .acct-line{display:flex;align-items:center;gap:12px;padding:12px 2px 4px;cursor:pointer;}
+  .acct-line .nm{font-size:13px;color:var(--sub);}
+  .acct-line .bl{font-size:18px;font-weight:800;margin-top:2px;}
+  .acct-line .dep{margin-left:auto;background:var(--blue-soft);color:#7fa0ff;font-weight:700;font-size:14px;padding:8px 16px;border-radius:9px;}
+  .push-note{margin-top:12px;background:var(--card2);border-radius:11px;text-align:center;padding:14px;color:#aeb6c4;font-size:13px;cursor:pointer;}
+  .card-panel{margin:12px 14px 0;background:var(--card);border-radius:16px;padding:18px 16px;}
+  .card-row{display:flex;align-items:center;gap:13px;}
+  .mini-card{width:44px;height:28px;border-radius:6px;background:linear-gradient(135deg,#2f3a57,#222a3f);display:flex;align-items:center;justify-content:center;font-size:9px;color:#9fb0d6;flex-shrink:0;border:1px solid #38425c;}
+  .card-panel .ct{font-size:15px;font-weight:800;}
+  .card-panel .cs{font-size:13px;color:var(--sub);margin-top:4px;}
+  .join-btn{margin-top:14px;width:100%;padding:15px;border:none;border-radius:11px;background:var(--blue-soft);color:#7fa0ff;font-size:15px;font-weight:700;cursor:pointer;}
+  .ttgy{margin:14px 14px 0;background:var(--card);border-radius:16px;padding:18px 16px 20px;}
+  .ttgy .hd{display:flex;justify-content:space-between;align-items:center;font-size:16px;font-weight:800;cursor:pointer;}
+  .ttgy .coupon{display:flex;align-items:center;gap:11px;margin-top:14px;font-size:13px;color:#d2d7e0;cursor:pointer;}
+  .ttgy .cic{font-size:21px;}
+
+  .nav{position:sticky;bottom:0;display:flex;background:var(--bg);border-top:1px solid var(--line);padding:8px 0 14px;margin-top:auto;}
+  .nav a{flex:1;text-align:center;color:var(--sub2);font-size:12px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;}
+  .nav a.on{color:#dfe3ea;}
+  .nav a svg{width:25px;height:25px;}
+  .pad{height:14px;}
+
+  /* finance main */
+  .fin-top{display:flex;align-items:center;gap:16px;padding:18px 20px 4px;}
+  .fin-title{font-size:27px;font-weight:800;letter-spacing:-1px;flex:1;}
+  .fin-tabs{display:flex;gap:26px;padding:14px 22px 0;}
+  .fin-tabs .ft{font-size:17px;font-weight:700;color:var(--sub2);padding-bottom:10px;cursor:pointer;position:relative;}
+  .fin-tabs .ft.active{color:#fff;}
+  .fin-tabs .ft.active::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:#fff;border-radius:2px;}
+  .fin-bar{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 14px;}
+  .fin-amt{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:700;}
+  .toggle{width:42px;height:24px;border-radius:14px;background:var(--blue);position:relative;cursor:pointer;display:inline-block;transition:background .2s;}
+  .toggle .knob{position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:#fff;color:var(--blue);font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;transition:left .2s,right .2s;}
+  .toggle.off{background:#39414f;}
+  .toggle.off .knob{right:auto;left:3px;color:#39414f;}
+  .fin-edit{font-size:15px;color:#cfd4de;font-weight:600;cursor:pointer;}
+
+  .fin-card{margin:0 16px;background:var(--card);border-radius:18px;padding:20px 18px;}
+  .fc-head{display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:800;}
+  .fc-all{font-size:14px;color:var(--sub);font-weight:600;cursor:pointer;}
+  .fc-div{height:1px;background:var(--line);margin:16px 0;}
+  .fc-acct{display:flex;align-items:flex-start;gap:12px;cursor:pointer;}
+  .fc-info{flex:1;}
+  .fc-name{font-size:16px;font-weight:700;letter-spacing:-.3px;}
+  .fc-num{font-size:13px;color:var(--sub);margin-top:5px;display:flex;align-items:center;gap:6px;}
+  .fc-gear{color:var(--sub);cursor:pointer;flex-shrink:0;}
+  .fc-gear svg{width:22px;height:22px;}
+  .fc-bal{font-size:28px;font-weight:800;letter-spacing:-1px;margin-top:16px;}
+  .fc-deposit{margin:16px 0 12px;width:100%;padding:16px;border:none;border-radius:12px;background:var(--blue-soft);color:#7fa0ff;font-size:16px;font-weight:700;cursor:pointer;}
+  .fc-maturity{display:flex;justify-content:space-between;align-items:center;background:#1a2233;border-radius:12px;padding:16px 18px;font-size:15px;}
+  .fc-maturity .k{color:var(--sub);}
+  .fc-maturity .v{font-weight:700;}
+
+  .fin-handle{display:flex;justify-content:center;padding:18px 0 4px;}
+  .fin-handle span{width:36px;height:5px;border-radius:3px;background:#39414f;}
+
+  .fin-promo{display:flex;align-items:center;gap:8px;padding:24px 22px 10px;cursor:pointer;}
+  .fin-promo h2{font-size:20px;font-weight:800;line-height:1.34;letter-spacing:-.5px;}
+  .fp-link{margin-top:12px;font-size:15px;color:#5a86ff;font-weight:700;}
+  .fin-promo svg{width:118px;flex-shrink:0;}
+
+  .navcirc{width:25px;height:25px;border-radius:50%;background:var(--blue);color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+  .nav a.on.fin{color:#3d6fff;}
+
+  /* mock page */
+  .mock-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 30px;}
+  .mock-ic{width:88px;height:88px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:40px;margin-bottom:26px;}
+  .mock-t{font-size:24px;font-weight:800;letter-spacing:-.5px;}
+  .mock-s{font-size:15px;color:var(--sub);margin-top:12px;line-height:1.6;}
+  .mock-btn{margin-top:36px;padding:16px 48px;border:none;border-radius:13px;background:var(--blue);color:#fff;font-size:17px;font-weight:700;cursor:pointer;}
+  .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#1c2740;color:#dfe5f0;padding:13px 22px;border-radius:24px;font-size:14px;font-weight:600;opacity:0;transition:opacity .25s,bottom .25s;pointer-events:none;z-index:50;}
+  .toast.show{opacity:1;bottom:110px;}
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- ============ MAIN ============ -->
+  <section class="page active" id="main">
+    <div class="fin-top">
+      <div class="fin-title">금융</div>
+      <div class="icn" onclick="openMock('챗봇 쏠메이트','💬')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1.1" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="1.1" fill="currentColor" stroke="none"/><path d="M8.5 14.5c1 1.2 2.2 1.8 3.5 1.8s2.5-.6 3.5-1.8" stroke-linecap="round"/></svg></div>
+      <div class="icn" onclick="openMock('검색','🔍')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2" stroke-linecap="round"/></svg></div>
+    </div>
+
+    <div class="fin-tabs">
+      <span class="ft active">은행</span>
+      <span class="ft" onclick="openMock('카드','💳')">카드</span>
+      <span class="ft" onclick="openMock('증권','📈')">증권</span>
+      <span class="ft" onclick="openMock('보험','🛡️')">보험</span>
+    </div>
+
+    <div class="fin-bar">
+      <div class="fin-amt">금액 <span class="toggle" onclick="toggleAmt(this)"><span class="knob">₩</span></span></div>
+      <div class="fin-edit" onclick="openMock('계좌 편집','✏️')">편집 ›</div>
+    </div>
+
+    <div class="fin-card">
+      <div class="fc-head"><span>계좌</span><span class="fc-all" onclick="openMock('전체계좌','🏦')">전체계좌 ›</span></div>
+      <div class="fc-div"></div>
+      <div class="fc-acct" onclick="go('detail')">
+        <div class="slogo sm"><svg viewBox="0 0 40 40"><path d="M14 9c-4 2-6 5-6 9 0 5 4 8 8 9-3-2-4-4-4-7 0-4 3-7 8-8-2-1-4-1.5-6-1.2Z" fill="#fff"/><path d="M26 31c4-2 6-5 6-9 0-5-4-8-8-9 3 2 4 4 4 7 0 4-3 7-8 8 2 1 4 1.5 6 1.2Z" fill="#fff"/></svg></div>
+        <div class="fc-info">
+          <div class="fc-name">예적금 신한 희망두배 청년통장</div>
+          <div class="fc-num" onclick="event.stopPropagation();copyNum()">신한 230-377-484747 <svg class="copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg></div>
+        </div>
+        <div class="fc-gear" onclick="event.stopPropagation();go('mgmt')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3.2"/><path d="M12 3.5v2M12 18.5v2M3.5 12h2M18.5 12h2M6 6l1.4 1.4M16.6 16.6 18 18M18 6l-1.4 1.4M7.4 16.6 6 18"/></svg></div>
+      </div>
+      <div class="fc-bal" id="mainBal">750,000원</div>
+      <button class="fc-deposit" onclick="openMock('입금하기','💸')">입금</button>
+      <div class="fc-maturity"><span class="k">만기일</span><span class="v">2028.11.10</span></div>
+    </div>
+
+    <div class="fin-handle"><span></span></div>
+
+    <div class="fin-promo" onclick="openMock('퇴직연금(IRP) 통합관리','🏦')">
+      <div>
+        <h2>신한은행에서 개인형IRP<br>통합관리하기</h2>
+        <div class="fp-link">퇴직연금 가져오기 ›</div>
+      </div>
+      <svg viewBox="0 0 120 96" fill="none">
+        <path d="M22 40a40 24 0 0 1 76 0" stroke="#9fb6e6" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <path d="M98 40 92 32M98 40l-7 5" stroke="#9fb6e6" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M98 58a40 24 0 0 1-76 0" stroke="#cdd8f0" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <path d="M22 58l6 8M22 58l7-5" stroke="#cdd8f0" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="44" y="44" width="34" height="26" fill="#e4ebf7"/>
+        <rect x="44" y="36" width="34" height="9" fill="#2f6df0"/>
+        <rect x="52" y="52" width="8" height="8" fill="#9fb6e6"/>
+        <rect x="64" y="52" width="8" height="8" fill="#9fb6e6"/>
+        <rect x="58" y="64" width="20" height="5" rx="2" fill="#2f6df0"/>
+      </svg>
+    </div>
+
+    <div class="pad"></div>
+
+    <nav class="nav">
+      <a onclick="openMock('홈','🏠')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 11 12 4l8 7"/><path d="M6 10v9h12v-9"/></svg>홈</a>
+      <a class="on fin"><span class="navcirc">₩</span>금융</a>
+      <a onclick="openMock('상품','🛍️')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 8h12l-1 11H7L6 8Z"/><path d="M9 8a3 3 0 0 1 6 0" stroke-linecap="round"/></svg>상품</a>
+      <a onclick="openMock('혜택','🎁')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="9" width="16" height="11" rx="1.5"/><path d="M4 9h16M12 9V6m0 3c-2.5 0-4-1-4-2.2A1.8 1.8 0 0 1 12 5a1.8 1.8 0 0 1 4-.2C16 6 14.5 9 12 9Z"/></svg>혜택</a>
+      <a onclick="openMock('주식','📈')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 16l4-5 4 3 6-8" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 6h2v2" stroke-linecap="round"/></svg>주식</a>
+    </nav>
+  </section>
+
+  <!-- ============ DETAIL ============ -->
+  <section class="page" id="detail">
+    <div class="topbar">
+      <div class="back" onclick="back()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="spacer"></div>
+      <div class="ttl" onclick="go('mgmt')">계좌관리</div>
+      <div class="icn" onclick="go('main')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 11 12 4l8 7"/><path d="M6 10v9h12v-9"/></svg></div>
+    </div>
+
+    <div class="acc-head" style="padding-bottom:6px">
+      <div class="slogo"><svg viewBox="0 0 40 40"><path d="M14 9c-4 2-6 5-6 9 0 5 4 8 8 9-3-2-4-4-4-7 0-4 3-7 8-8-2-1-4-1.5-6-1.2Z" fill="#fff"/><path d="M26 31c4-2 6-5 6-9 0-5-4-8-8-9 3 2 4 4 4 7 0 4-3 7-8 8 2 1 4 1.5 6 1.2Z" fill="#fff"/></svg></div>
+      <div>
+        <div class="name" style="font-size:17px">신한 희망두배 청년통장</div>
+        <div class="num" onclick="copyNum()">신한 230-377-484747 <svg class="copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg></div>
+      </div>
+    </div>
+
+    <div class="bal-wrap">
+      <div class="bal" id="detailBal">750,000원</div>
+      <div class="bal-sub">2028년 11월 10일 만기</div>
+      <button class="deposit-btn" onclick="openMock('입금하기','💸')">입금</button>
+      <div class="rate-card" onclick="openMock('적용이율 안내','💰')">
+        <div class="rate-ic">💰</div>
+        <div>
+          <div class="rt">적용이율</div>
+          <div class="rs" id="rateLine">연 2.75% · 원금 및 쌓인이자 757,133원</div>
+        </div>
+        <div class="ar">›</div>
+      </div>
+    </div>
+
+    <div class="filter" onclick="openMock('조회 조건 설정','🗓️')">6개월 · 전체 · 최신순 ⌄</div>
+    <div class="txns" id="txns"></div>
+  </section>
+
+  <!-- ============ MGMT ============ -->
+  <section class="page" id="mgmt">
+    <div class="topbar">
+      <div class="back" onclick="back()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="spacer"></div>
+      <div class="icn" onclick="openMock('챗봇 쏠메이트','💬')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1.1" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="1.1" fill="currentColor" stroke="none"/><path d="M8.5 14.5c1 1.2 2.2 1.8 3.5 1.8s2.5-.6 3.5-1.8" stroke-linecap="round"/></svg></div>
+      <div class="icn" onclick="go('main')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 11 12 4l8 7"/><path d="M6 10v9h12v-9"/></svg></div>
+    </div>
+
+    <div class="acc-head">
+      <div class="slogo"><svg viewBox="0 0 40 40"><path d="M14 9c-4 2-6 5-6 9 0 5 4 8 8 9-3-2-4-4-4-7 0-4 3-7 8-8-2-1-4-1.5-6-1.2Z" fill="#fff"/><path d="M26 31c4-2 6-5 6-9 0-5-4-8-8-9 3 2 4 4 4 7 0 4-3 7-8 8 2 1 4 1.5 6 1.2Z" fill="#fff"/></svg></div>
+      <div>
+        <div class="name">신한 희망두배 청년통장</div>
+        <div class="num" onclick="copyNum()">신한 230-377-484747 <svg class="copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg></div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="info">
+      <div class="row tap" onclick="openMock('적용이자율 상세','📈')"><span class="k">적용이자율</span><span class="v">연 2.75% (고정금리) <span class="chev">›</span></span></div>
+      <div class="row"><span class="k">가입일</span><span class="v">2025.11.10</span></div>
+      <div class="row"><span class="k">만기일</span><span class="v">2028.11.10</span></div>
+      <div class="row"><span class="k">입금방법</span><span class="v">수시</span></div>
+      <div class="row"><span class="k">입금회차</span><span class="v" id="cycle">5</span></div>
+      <div class="row"><span class="k">계좌관리점</span><span class="v">서울시청금융센터</span></div>
+      <div class="row tap" onclick="openMock('만기 시 입금계좌 변경','✏️')"><span class="k">만기 시 입금계좌</span><span class="v">변경 <span class="chev">›</span></span></div>
+    </div>
+
+    <div class="exp-wrap">
+      <div class="exp">
+        <div>
+          <div class="item" onclick="toggleExp(this)">이체정보 <span class="caret">⌄</span></div>
+          <div class="body"><p>자동이체 등록 내역이 없습니다. 매월 25일 자동이체를 설정하면 잊지 않고 적립할 수 있어요.</p></div>
+        </div>
+        <div>
+          <div class="item" onclick="toggleExp(this)">계좌 인사이트 <span class="caret">⌄</span></div>
+          <div class="body"><p>최근 6개월간 매월 15만원씩 꾸준히 적립 중입니다. 만기까지 유지 시 서울시 지원금이 1:1 매칭됩니다.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mgmt-foot">
+      <div class="lbl">관리정보</div>
+      <div class="row" onclick="openMock('상품설명서','📄')"><span class="v">상품설명</span><span class="chev">›</span></div>
+    </div>
+  </section>
+
+  <!-- ============ MOCK ============ -->
+  <section class="page" id="mock">
+    <div class="topbar">
+      <div class="back" onclick="back()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="spacer"></div>
+      <div class="ttl" id="mockTitle" style="color:#e6e9ef;cursor:default"></div>
+      <div style="width:26px"></div>
+    </div>
+    <div class="mock-body">
+      <div class="mock-ic" id="mockIc">🚧</div>
+      <div class="mock-t" id="mockT2"></div>
+      <div class="mock-s">준비 중인 화면입니다.<br>실제 앱에서는 이곳에서 해당 기능을 이용할 수 있어요.</div>
+      <button class="mock-btn" onclick="back()">확인</button>
+    </div>
+  </section>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+  /* ---------- navigation with history ---------- */
+  let stack=[];
+  function showPage(id){
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0,0);
+  }
+  function go(id){
+    const cur=document.querySelector('.page.active');
+    if(cur && cur.id!==id) stack.push(cur.id);
+    showPage(id);
+  }
+  function back(){
+    const prev=stack.pop()||'main';
+    showPage(prev);
+  }
+  function openMock(title,icon){
+    document.getElementById('mockTitle').textContent=title;
+    document.getElementById('mockT2').textContent=title;
+    document.getElementById('mockIc').textContent=icon||'🚧';
+    go('mock');
+  }
+
+  /* ---------- helpers ---------- */
+  function toggleExp(it){
+    const body=it.nextElementSibling;
+    const c=it.querySelector('.caret');
+    const open=body.classList.toggle('open');
+    c.style.transform=open?'rotate(180deg)':'';
+  }
+  function dismissPromo(el){ el.closest('.promo').style.display='none'; }
+  function toggleAmt(t){
+    const off=t.classList.toggle('off');
+    const bal=document.getElementById('mainBal');
+    if(off){ bal.dataset.v=bal.textContent; bal.textContent='••••••'; }
+    else if(bal.dataset.v){ bal.textContent=bal.dataset.v; }
+  }
+  function copyNum(){
+    navigator.clipboard && navigator.clipboard.writeText('230-377-484747').catch(()=>{});
+    toast('계좌번호가 복사되었습니다');
+  }
+  let toastT;
+  function toast(msg){
+    const t=document.getElementById('toast');
+    t.textContent=msg;t.classList.add('show');
+    clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1800);
+  }
+  const won=n=>n.toLocaleString('ko-KR')+'원';
+
+  /* ---------- auto deposit: +150,000 every month on the 25th ---------- */
+  const MONTHLY=150000, RATE=0.0275;
+  const START=new Date(2025,10,25);          // 첫 적립 2025-11-25 (Nov=10)
+  function buildAccount(){
+    const today=new Date();
+    const deposits=[];
+    let d=new Date(START);
+    while(d<=today){ deposits.push(new Date(d)); d=new Date(d.getFullYear(),d.getMonth()+1,25); }
+
+    const principal=deposits.length*MONTHLY;
+
+    // 잔액 / 회차 반영
+    document.getElementById('mainBal').textContent=won(principal);
+    document.getElementById('detailBal').textContent=won(principal);
+    document.getElementById('cycle').textContent=deposits.length;
+
+    // 단리 기준 쌓인이자 추정
+    let interest=0;
+    deposits.forEach(dep=>{
+      const days=Math.round((today-dep)/86400000);
+      interest+=MONTHLY*RATE*days/365;
+    });
+    const total=principal+Math.round(interest);
+    document.getElementById('rateLine').textContent=`연 2.75% · 원금 및 쌓인이자 ${won(total)}`;
+
+    // 거래내역 (최신순)
+    const times=['16:02:08','16:02:38','16:01:55','15:58:21','16:03:12','15:47:09','16:00:44','15:52:30'];
+    let running=0; const rows=[];
+    deposits.forEach((dep,i)=>{ running+=MONTHLY; rows.push({dep,bal:running,i}); });
+    rows.reverse();
+
+    const html=rows.map(r=>{
+      const dt=`${r.dep.getFullYear()}년 ${r.dep.getMonth()+1}월 ${r.dep.getDate()}일`;
+      const tm=times[r.i%times.length];
+      const id=110000000000+Math.floor((r.dep-START)/3600000)*7+r.i*131;
+      return `
+      <div class="txn-date">${dt}</div>
+      <div class="txn">
+        <div><div class="lbl">입금</div><div class="tm">${tm}</div></div>
+        <div><div class="amt">+ ${won(MONTHLY)}</div><div class="run">${won(r.bal)}</div></div>
+      </div>
+      <div class="txn-id">${id}</div>
+      <div class="txn-line"></div>`;
+    }).join('');
+    document.getElementById('txns').innerHTML=html;
+  }
+  buildAccount();
+</script>
+</body>
+</html>
